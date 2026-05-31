@@ -5,6 +5,9 @@
 // @match        https://hentainexus.com/read/*
 // @run-at       document-idle
 // @grant        none
+// @homepage     https://github.com/momoyuki/HentaiNexus-Infinite-Reader
+// @updateURL    https://raw.githubusercontent.com/momoyuki/HentaiNexus-Infinite-Reader/main/HentaiNexus%20Infinite%20Reader.user.js
+// @downloadURL  https://raw.githubusercontent.com/momoyuki/HentaiNexus-Infinite-Reader/main/HentaiNexus%20Infinite%20Reader.user.js
 // ==/UserScript==
 
 (function () {

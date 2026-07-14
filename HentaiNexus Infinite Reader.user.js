@@ -43,11 +43,31 @@
         initialized = true;
 
         console.log(`✅ Roxy Reader: พบ ${data.length} หน้า (source: ${source})`);
+        showStartButton(data);
+    }, 250);
+
+    function showStartButton(data) {
+        const btn = document.createElement('button');
+        btn.id = 'reader-start-btn';
+        btn.textContent = '▶ Start Reader';
+        Object.assign(btn.style, {
+            position: 'fixed', top: '15px', right: '15px', zIndex: '99999',
+            background: 'rgba(0,0,0,0.9)', padding: '12px 20px', borderRadius: '12px',
+            color: 'white', fontFamily: 'sans-serif', fontSize: '15px', fontWeight: 'bold',
+            border: 'none', cursor: 'pointer', boxShadow: '0 5px 25px rgba(0,0,0,0.7)',
+            backdropFilter: 'blur(8px)'
+        });
+        btn.onclick = () => startReader(data);
+        document.body.appendChild(btn);
+    }
+
+    function startReader(data) {
+        document.getElementById('reader-start-btn')?.remove();
         createControlPanel(data);
         createProgressBar();
         buildReader(data);
         setupKeyboardNavigation(data);
-    }, 250);
+    }
 
     function getImageUrls(page) {
         return [page.image_avif, page.image_fallback, page.image].filter(Boolean);
@@ -73,23 +93,21 @@
         });
         panel.innerHTML = `
             <a href="${galleryUrl}" style="background:#c62828;padding:8px 14px;border-radius:6px;color:white;text-decoration:none;">🔙 Gallery</a>
-            <button id="zoom-out" style="background:#555;padding:7px 13px;border:none;border-radius:6px;color:white;">−</button>
+            <input id="zoom-slider" type="range" min="30" max="300" step="5" value="100" style="width:100px;">
             <span id="zoom-val" style="min-width:55px;text-align:center;font-weight:bold;">100%</span>
-            <button id="zoom-in" style="background:#555;padding:7px 13px;border:none;border-radius:6px;color:white;">+</button>
             <button id="zoom-reset" style="background:#444;padding:7px 10px;border:none;border-radius:6px;color:white;font-size:12px;">Reset</button>
             <button id="download-zip" style="background:#2e7d32;padding:7px 13px;border:none;border-radius:6px;color:white;">📦 Download</button>
         `;
         document.body.appendChild(panel);
 
-        const updateZoom = (delta) => {
-            currentZoom = Math.max(30, Math.min(300, currentZoom + delta));
+        const slider = document.getElementById('zoom-slider');
+        const applyZoom = () => {
             document.getElementById('zoom-val').textContent = currentZoom + '%';
             const container = document.getElementById('infinite-reader-container');
             if (container) container.style.width = currentZoom + '%';
         };
-        document.getElementById('zoom-in').onclick = () => updateZoom(15);
-        document.getElementById('zoom-out').onclick = () => updateZoom(-15);
-        document.getElementById('zoom-reset').onclick = () => { currentZoom = 100; updateZoom(0); };
+        slider.oninput = () => { currentZoom = Number(slider.value); applyZoom(); };
+        document.getElementById('zoom-reset').onclick = () => { currentZoom = 100; slider.value = 100; applyZoom(); };
         document.getElementById('download-zip').onclick = () => downloadArchive(data, bookId, galleryUrl);
     }
 
